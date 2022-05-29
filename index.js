@@ -48,7 +48,12 @@ async function run() {
             res.send(result);
         })
 
-        
+        app.get('/delete-order/:order', async (req, res) => {
+            const order = req.params.order;
+            const result = await orderCollection.findOneAndDelete({ '_id': ObjectId(order) });
+            res.send(result);
+
+        });
 
         app.get('/reviews', async (req, res) => {
             const query = {};
