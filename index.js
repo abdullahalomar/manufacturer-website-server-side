@@ -17,6 +17,8 @@ async function run() {
     try {
         await client.connect();
         const productCollection = client.db('ram-manufacturer').collection('products');
+        const orderCollection = client.db('ram-manufacturer').collection('orders');
+        const reviewCollection = client.db('ram-manufacturer').collection('reviews');
 
         app.get('/product', async (req, res) => {
             const query = {};
@@ -25,7 +27,7 @@ async function run() {
             res.send(products);
         });
          
-        app.get('/product/id', async (req, res) => {
+        app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const product = await productCollection.findOne(query);
@@ -33,10 +35,37 @@ async function run() {
         })
 
         app.get('/order', async (req, res) => {
-            const name = req.query.name;
-            const query = { name: name };
-            const orders = await productCollection.findOne(query);
-            res.send(orders);
+            const user = req.query.user;
+            const query = { user_id: user };
+            const orders = orderCollection.find(query);
+            const result = await orders.toArray();
+            res.send(result);
+        })
+
+        app.post('/create-order', async (req, res) => {
+            const newOrders = req.body;
+            const result = await orderCollection.insertOne(newOrders);
+            res.send(result);
+        })
+
+        app.get('/delete-order/:order', async (req, res) => {
+            const order = req.params.order;
+            const result = await orderCollection.findOneAndDelete({ '_id': ObjectId(order) });
+            res.send(result);
+
+        });
+
+        app.get('/reviews', async (req, res) => {
+            const query = {};
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
+        app.post('/add-review', async (req, res) => {
+            const newReviews = req.body;
+            const result = await reviewCollection.insertOne(newReviews);
+            res.send(result);
         })
 
     }
