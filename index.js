@@ -20,12 +20,7 @@ async function run() {
         const orderCollection = client.db('ram-manufacturer').collection('orders');
         const reviewCollection = client.db('ram-manufacturer').collection('reviews');
 
-        app.get('/product', async (req, res) => {
-            const query = {};
-            const cursor = productCollection.find(query);
-            const products = await cursor.toArray();
-            res.send(products);
-        });
+        
          
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
